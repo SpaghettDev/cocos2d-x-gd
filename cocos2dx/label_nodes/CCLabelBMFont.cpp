@@ -1267,26 +1267,24 @@ CCLabelBMFont* CCLabelBMFont::createBatched(char const * str, char const * fntFi
     return NULL;
 }
 void CCLabelBMFont::limitLabelWidth(float maxWidth, float maxScale, float minScale) {
-    if (maxWidth <= 0) {
-        return;
+    this->setScale(1.f);
+    float contentWidth = this->getContentSize().width;
+    float newScale = 1.f;
+
+    if (contentWidth > maxWidth && maxWidth > .0f) {
+        newScale = maxWidth / contentWidth;
     }
-    setScale(1.f);
-    float currentScale = getScale();
-    CCLOG("scale: %f<%f<%f", minScale, currentScale, maxScale);
-    float currentWidth = getContentSize().width;
-    CCLOG("width: %f<%f", currentWidth, maxWidth);
-    float newScale = currentScale;
-    if (currentWidth > maxWidth) {
-        newScale = maxWidth / currentWidth * currentScale;
-    }
-    CCLOG("new scale: %f", newScale);
-    if (newScale < minScale) {
-        newScale = minScale;
-    }
-    if (newScale > maxScale) {
+
+    if (maxScale != .0f && newScale >= maxScale) {
         newScale = maxScale;
     }
-    setScale(newScale);
+
+    if (minScale == .0f || newScale > minScale) {
+        this->setScale(newScale);
+    }
+    else {
+        this->setScale(minScale);
+    }
 }
 
 NS_CC_END
